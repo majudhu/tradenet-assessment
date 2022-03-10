@@ -4,7 +4,6 @@ import {
   FormEventHandler,
   HTMLInputTypeAttribute,
   ReactElement,
-  HTMLInputElement,
 } from 'react';
 
 export const Form = ({ formData }: { formData: FormData }) => {

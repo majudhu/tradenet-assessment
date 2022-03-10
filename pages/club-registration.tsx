@@ -1,15 +1,7 @@
+import { Form, FormData } from '@/components/Form';
 import Navbar from '@/components/Navbar';
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import {
-  Form,
-  FormData,
-  TextField,
-  SelectField,
-  RadioField,
-  Checkbox,
-} from '@/components/Form';
-import { Placeholder } from 'phosphor-react';
 
 const Home: NextPage = () => {
   return (
