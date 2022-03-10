@@ -11,7 +11,7 @@ const Navbar: NextPage = () => {
       <h1>Ministry of Youth and Sports</h1>
       {router.pathname != '/' && (
         <Link href='/'>
-          <a className='text-2xl font-bold text-gray-400'>Home</a>
+          <a className='ml-auto text-2xl font-bold text-gray-400'>Home</a>
         </Link>
       )}
     </nav>
