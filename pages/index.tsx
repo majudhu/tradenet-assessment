@@ -1,15 +1,10 @@
 import Navbar from '@/components/Navbar';
-import type {
-  GetServerSideProps,
-  InferGetServerSidePropsType,
-  NextPage,
-} from 'next';
+import type { NextPage } from 'next';
 import Head from 'next/head';
-import { DocumentTextIcon } from '@heroicons/react/outline';
+import Link from 'next/link';
+import { FileText } from 'phosphor-react';
 
-const Home: NextPage<
-  InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ forms }) => {
+const Home: NextPage = () => {
   return (
     <>
       <Head>
@@ -31,44 +26,23 @@ const Home: NextPage<
         </p>
         <div className='bg-gray-100 border border-gray-300 rounded-lg px-8 py-10 my-10'>
           <h2 className='text-2xl mb-6'>Forms</h2>
-          {forms.map(({ _id, name, url }) => (
-            <a
-              download
-              key={_id}
-              href={url}
-              className='flex my-4 text-blue-400 text-lg font-medium'
-            >
-              <DocumentTextIcon width='24' className='inline mr-4' />
-              {name}
-            </a>
-          ))}
+          <FormLink href='/club-registration' name='Club Registration Form' />
+          <FormLink
+            href='/tournament-registration'
+            name='Tourmament Resgistration Form'
+          />
         </div>
       </main>
     </>
   );
 };
 
+const FormLink = ({ href, name }: { href: string; name: string }) => (
+  <Link href={href}>
+    <a className='flex my-4 text-blue-400 text-lg font-medium'>
+      <FileText size={24} className='inline mr-4' />
+      {name}
+    </a>
+  </Link>
+);
 export default Home;
-
-export const getServerSideProps: GetServerSideProps<{
-  forms: Form[];
-}> = async () => {
-  return {
-    props: {
-      forms: [
-        {
-          _id: 1,
-          name: 'Club Registration Form',
-          url: '',
-        },
-        {
-          _id: 2,
-          name: 'Tourmament Resgistration Form',
-          url: '',
-        },
-      ],
-    },
-  };
-};
-
-type Form = { _id: number; name: string; url: string };
