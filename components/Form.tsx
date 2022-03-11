@@ -136,7 +136,7 @@ function FormFieldComponent({
   ...field
 }: FormField & {
   value: string | number | boolean | Date;
-  onChange: ChangeEventHandler<HTMLInputElement>;
+  onChange: ChangeEventHandler;
 }): ReactElement {
   switch (field.type) {
     case 'text':
@@ -152,7 +152,7 @@ function FormFieldComponent({
             id={field.name}
             type='text'
             placeholder={field.placeholder}
-            value={value as string}
+            value={value as string} // slack over typescript here
             onChange={onChange}
           />
         </div>
@@ -168,7 +168,7 @@ function FormFieldComponent({
             className={INPUT_CLASSNAME}
             name={field.name}
             id={field.name}
-            value={value as string}
+            value={value as string}  // slack over typescript here
             onChange={onChange}
           >
             {field.placeholder && (
@@ -194,7 +194,7 @@ function FormFieldComponent({
             name={field.name}
             id={field.name}
             placeholder={field.placeholder}
-            value={value as string}
+            value={value as string}  // slack over typescript here
             onChange={onChange}
           />
         </div>
@@ -212,7 +212,7 @@ function FormFieldComponent({
             id={field.name}
             type='text'
             placeholder={field.placeholder}
-            value={value as string}
+            value={value as string}  // slack over typescript here
             onChange={onChange}
           />
         </div>
