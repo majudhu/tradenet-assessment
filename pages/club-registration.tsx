@@ -213,5 +213,45 @@ const registrationForm: FormData = {
         },
       ],
     },
+    {
+      title: 'Training',
+      fields: [
+        {
+          type: 'checkbox',
+          name: 'trainingLevels',
+          label: 'What level does your club participate?',
+          required: false,
+          className: 'col-span-4',
+          options: [
+            'Social/ Recreation',
+            'Competitive (Friendly)',
+            'Competitive (Local league)',
+            'Competitive (National)',
+          ],
+        },
+        {
+          type: 'text',
+          name: 'trainingDays',
+          label: 'Which days does your club train on?',
+          required: true,
+          className: 'col-span-4',
+          placeholder: 'Sunday, Tuesday, Saturday',
+          htmlType: 'text',
+        },
+        {
+          type: 'text',
+          name: 'membershipMonthlyFee',
+          label: 'What is the monthly cost of membership? (MVR) ',
+          required: true,
+          className: 'col-span-4',
+          placeholder: 'Membership price',
+          htmlType: 'text',
+        },
+      ],
+    },
   ],
+  decleration: {
+    title: 'Declaration',
+    text: 'I am the contact for the above club and willing to have my name, address and telephone number in the club directory.',
+  },
 };
