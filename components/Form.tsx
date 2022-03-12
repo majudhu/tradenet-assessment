@@ -1,4 +1,12 @@
-import { ArrowCounterClockwise, CalendarBlank } from 'phosphor-react';
+import { Dialog } from '@headlessui/react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import {
+  ArrowCounterClockwise,
+  CalendarBlank,
+  Check,
+  CheckCircle,
+} from 'phosphor-react';
 import {
   ChangeEventHandler,
   DetailedHTMLProps,
@@ -7,21 +15,26 @@ import {
   HTMLInputTypeAttribute,
   InputHTMLAttributes,
   useCallback,
+  useEffect,
   useState,
 } from 'react';
 
-export const Form = ({
-  formData,
-  onSubmit,
-}: {
-  formData: FormData;
-  onSubmit: fn;
-}) => {
+export const Form = ({ formData }: { formData: FormData }) => {
+  const router = useRouter();
   const [formState, setFormState] = useState(() => createFormState(formData));
+  const [success, setSuccess] = useState(true);
 
-  const submitForm: FormEventHandler<HTMLFormElement> = (e) => {
+  const submitForm: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    const response = await fetch('/api/forms', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formState),
+    });
+    const data = await response.json();
+    if (data.success) {
+      setSuccess(true);
+    }
   };
 
   const sectionProgress = formData.sections.map((s) =>
@@ -51,65 +64,113 @@ export const Form = ({
     }
   }, []);
 
+  // if url has formid query param, load the existing form data from api
+  const formId = router.query?.formId;
+  useEffect(() => {
+    if (formId) {
+      fetch(`/api/forms?formId=${formId}`)
+        .then(async (response) => {
+          const data = await response.json();
+          setFormState(data);
+        })
+        // clear query if api call fails
+        .catch(() =>
+          router.replace(router.pathname, undefined, { shallow: true })
+        );
+    }
+  }, [formId]);
+
   return (
-    <form
-      onSubmit={submitForm}
-      className='grid grid-cols-4 gap-x-6 gap-y-10 pb-56 text-lg'
-      onReset={() => setFormState(createFormState(formData))}
-    >
-      {formData.sections.map(({ title, fields }, i) => (
-        <Fragment key={i}>
-          {i !== 0 && <hr className='col-span-4 border-t-gray-600' />}
-          <h2 className='col-span-4 text-2xl'>{title}</h2>
-          {fields.map((field) => (
-            <FormFieldComponent
-              key={field.name}
-              value={formState[field.name]}
+    <>
+      <form
+        onSubmit={submitForm}
+        className='grid grid-cols-4 gap-x-6 gap-y-10 pb-56 text-lg'
+        onReset={() => setFormState(createFormState(formData))}
+      >
+        {formData.sections.map(({ title, fields }, i) => (
+          <Fragment key={i}>
+            {i !== 0 && <hr className='col-span-4 border-t-gray-600' />}
+            <h2 className='col-span-4 text-2xl'>{title}</h2>
+            {fields.map((field) => (
+              <FormFieldComponent
+                key={field.name}
+                value={formState[field.name]}
+                onChange={onChange}
+                {...field}
+              />
+            ))}
+          </Fragment>
+        ))}
+        {formData.decleration && (
+          <div className='col-span-4 bg-gray-100 border border-gray-300 rounded-lg p-6'>
+            <h2 className='text-2xl mb-4'>{formData.decleration.title}</h2>
+            <p className='text-lg mb-4'>{formData.decleration.text}</p>
+            <input
+              required
+              id='decleration'
+              type='checkbox'
+              className='w-6 h-6'
               onChange={onChange}
-              {...field}
+            />
+            <label htmlFor='decleration' className='ml-4'>
+              I agree
+            </label>
+          </div>
+        )}
+        <div className='fixed inset-x-0 bottom-0 px-12 py-6 flex items-center bg-blue-800 gap-4'>
+          {sectionProgress.map((completed, i) => (
+            <div
+              key={i}
+              className={`h-5 rounded-[4px] min-w-[147px] border border-green ${
+                completed ? 'bg-green' : ''
+              }`}
             />
           ))}
-        </Fragment>
-      ))}
-      {formData.decleration && (
-        <div className='col-span-4 bg-gray-100 border border-gray-300 rounded-lg p-6'>
-          <h2 className='text-2xl mb-4'>{formData.decleration.title}</h2>
-          <p className='text-lg mb-4'>{formData.decleration.text}</p>
-          <input
-            required
-            id='decleration'
-            type='checkbox'
-            className='w-6 h-6'
-            onChange={onChange}
-          />
-          <label htmlFor='decleration' className='ml-4'>
-            I agree
-          </label>
+          <button
+            type='reset'
+            className='ml-auto p-3.5 border border-white rounded-lg'
+          >
+            <ArrowCounterClockwise className='text-white w-8 h-8' size={32} />
+          </button>
+          <button
+            type='submit'
+            className='bg-green text-white py-4 px-12 text-2xl rounded-lg'
+          >
+            Submit
+          </button>
         </div>
-      )}
-      <div className='fixed inset-x-0 bottom-0 px-12 py-6 flex items-center bg-blue-800 gap-4'>
-        {sectionProgress.map((completed, i) => (
-          <div
-            key={i}
-            className={`h-5 rounded-[4px] min-w-[147px] border border-green ${
-              completed ? 'bg-green' : ''
-            }`}
-          />
-        ))}
-        <button
-          type='reset'
-          className='ml-auto p-3.5 border border-white rounded-lg'
-        >
-          <ArrowCounterClockwise className='text-white w-8 h-8' size={32} />
-        </button>
-        <button
-          type='submit'
-          className='bg-green text-white py-4 px-12 text-2xl rounded-lg'
-        >
-          Submit
-        </button>
-      </div>
-    </form>
+      </form>
+      <Dialog
+        open={success}
+        onClose={() => setSuccess(false)}
+        className='fixed z-50 inset-0 h-screen w-full flex items-center'
+      >
+        <Dialog.Overlay />
+        <div className='bg-white text-center rounded-lg shadow-lg max-w-2xl mx-auto py-12 px-36'>
+          <div className='mx-auto rounded-full w-20 h-20 bg-green mb-8 p-5'>
+            <Check className='text-white w-10 h-10' />
+          </div>
+          <Dialog.Title className='text-4xl mb-4'>Success!</Dialog.Title>
+          <Dialog.Description className='text-2xl mb-6'>
+            Your submission has been saved.
+          </Dialog.Description>
+
+          <button
+            className='mx-auto block text-lg text-blue-600 mb-4'
+            onClick={() => {
+              setSuccess(false);
+              setFormState(createFormState(formData));
+            }}
+          >
+            Submit a new response
+          </button>
+
+          <Link href='/login'>
+            <a className='text-gray-400 text-lg'>View Submissions</a>
+          </Link>
+        </div>
+      </Dialog>
+    </>
   );
 };
 
@@ -117,14 +178,18 @@ function createFormState(
   formData: FormData
 ): Record<string, string | number | boolean | Date> {
   // create blank state object to use in useState for the form template
-  return Object.fromEntries(
-    formData.sections.flatMap(({ fields }) =>
-      fields.map(({ name }) => [name, ''])
-    )
+  return Object.assign(
+    Object.fromEntries(
+      formData.sections.flatMap(({ fields }) =>
+        fields.map(({ name }) => [name, ''])
+      )
+    ),
+    { serviceType: formData.serviceType }
   );
 }
 
 export interface FormData {
+  serviceType: string;
   sections: FormSection[];
   decleration?: { title: string; text: string };
 }

@@ -3,7 +3,7 @@
 import type { IronSessionOptions } from 'iron-session';
 
 export const sessionOptions: IronSessionOptions = {
-  password: 'not a very secret password',
+  password: 'not a very secret password that is atleast 32 characters long',
   cookieName: 'iron-session/examples/next.js',
   // secure: true should be used in production (HTTPS) but can't be used in development (HTTP)
   cookieOptions: {
@@ -15,6 +15,6 @@ export const sessionOptions: IronSessionOptions = {
 declare module 'iron-session' {
   export interface IronSessionData {
     isLoggedIn: boolean;
-    name: string;
+    email: string;
   }
 }

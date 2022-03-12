@@ -28,6 +28,7 @@ const ClubRegistrationPage: NextPage = () => {
 export default ClubRegistrationPage;
 
 const registrationForm: FormData = {
+  serviceType: 'Club Registration',
   sections: [
     {
       title: 'General Information',
@@ -135,7 +136,7 @@ const registrationForm: FormData = {
           name: 'clubWebsite',
           label: 'Club Website',
           htmlType: 'text',
-          required: true,
+          required: false,
           placeholder: 'Club Website',
           className: 'col-span-2',
         },

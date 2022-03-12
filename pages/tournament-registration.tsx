@@ -30,6 +30,7 @@ const TournamentRegistrationPage: NextPage = () => {
 export default TournamentRegistrationPage;
 
 const tournamentForm: FormData = {
+  serviceType: 'Tournament Registration',
   sections: [
     {
       title: 'General Information',
