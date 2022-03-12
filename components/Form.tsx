@@ -2,9 +2,9 @@ import {
   ChangeEventHandler,
   DetailedHTMLProps,
   FormEventHandler,
+  Fragment,
   HTMLInputTypeAttribute,
   InputHTMLAttributes,
-  ReactElement,
   useCallback,
   useState,
 } from 'react';
@@ -16,23 +16,29 @@ export const Form = ({ formData }: { formData: FormData }) => {
     e.preventDefault();
   };
 
-  const onChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
-    (e) => {
-      switch (e.type) {
-        case 'checkbox':
-          return setFormState((formState) => ({
+  const onChange = useCallback<ChangeEventHandler<any>>((e) => {
+    switch (e.target.type) {
+      case 'checkbox':
+        return setFormState((formState) => {
+          return {
             ...formState,
             [e.target.name]: e.target.checked,
-          }));
-      }
-    },
-    [setFormState]
-  );
+          };
+        });
+      default:
+        return setFormState((formState) => {
+          return {
+            ...formState,
+            [e.target.name]: e.target.value,
+          };
+        });
+    }
+  }, []);
 
   return (
     <form onSubmit={submitForm} className='grid grid-cols-4 gap-x-6 gap-y-10'>
       {formData.sections.map(({ title, fields }, i) => (
-        <>
+        <Fragment key={i}>
           {i !== 0 && <hr className='col-span-4 border-t-gray-600' />}
           <h2 className='col-span-4 text-2xl'>{title}</h2>
           {fields.map((field) => (
@@ -43,7 +49,7 @@ export const Form = ({ formData }: { formData: FormData }) => {
               {...field}
             />
           ))}
-        </>
+        </Fragment>
       ))}
       {formData.decleration && (
         <div className='col-span-4 bg-gray-100 border border-gray-300 rounded-lg p-6'>
@@ -137,7 +143,7 @@ function FormFieldComponent({
 }: FormField & {
   value: string | number | boolean | Date;
   onChange: ChangeEventHandler;
-}): ReactElement {
+}) {
   switch (field.type) {
     case 'text':
       return (
@@ -150,7 +156,7 @@ function FormFieldComponent({
             className={INPUT_CLASSNAME}
             name={field.name}
             id={field.name}
-            type='text'
+            type={field.htmlType ?? 'text'}
             placeholder={field.placeholder}
             value={value as string} // slack over typescript here
             onChange={onChange}
@@ -165,10 +171,12 @@ function FormFieldComponent({
           </label>
           <select
             required={field.required}
-            className={INPUT_CLASSNAME}
+            className={`${INPUT_CLASSNAME} ${
+              value == '' ? 'text-gray-400' : ''
+            }`}
             name={field.name}
             id={field.name}
-            value={value as string}  // slack over typescript here
+            value={value as string} // slack over typescript here
             onChange={onChange}
           >
             {field.placeholder && (
@@ -177,9 +185,53 @@ function FormFieldComponent({
               </option>
             )}
             {field.options.map((value) => (
-              <option key={value}>{value}</option>
+              <option key={value} value={value} className='text-black'>
+                {value}
+              </option>
             ))}
           </select>
+        </div>
+      );
+    case 'checkbox':
+      return (
+        <div key={field.name} className={field.className}>
+          <p className={LABEL_CLASSNAME}>{field.label}</p>
+          <div className='flex flex-wrap gap-10'>
+            {field.options.map((value: any) => (
+              <div key={value} className='flex gap-4'>
+                <input
+                  type='checkbox'
+                  className='w-6 h-6'
+                  name={`${field.name}-${value}`}
+                  id={`${field.name}-${value}`}
+                  onChange={onChange}
+                  defaultChecked={false}
+                />
+                <label htmlFor={`${field.name}-${value}`}>{value}</label>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    case 'radio':
+      return (
+        <div key={field.name} className={field.className}>
+          <p className={LABEL_CLASSNAME}>{field.label}</p>
+          <div className='flex flex-wrap gap-10'>
+            {field.options.map((value: any) => (
+              <div key={value} className='flex gap-4'>
+                <input
+                  type='radio'
+                  className='w-6 h-6'
+                  name={field.name}
+                  id={`${field.name}-${value}`}
+                  value={value}
+                  onChange={onChange}
+                />
+                <label htmlFor={`${field.name}-${value}`}>{value}</label>
+              </div>
+            ))}
+          </div>
         </div>
       );
     case 'textarea':
@@ -194,29 +246,13 @@ function FormFieldComponent({
             name={field.name}
             id={field.name}
             placeholder={field.placeholder}
-            value={value as string}  // slack over typescript here
+            value={value as string} // slack over typescript here
             onChange={onChange}
           />
         </div>
       );
     default:
-      return (
-        <div key={field.name} className={field.className}>
-          <label htmlFor={field.name} className={LABEL_CLASSNAME}>
-            {field.label}
-          </label>
-          <input
-            required={field.required}
-            className={INPUT_CLASSNAME}
-            name={field.name}
-            id={field.name}
-            type='text'
-            placeholder={field.placeholder}
-            value={value as string}  // slack over typescript here
-            onChange={onChange}
-          />
-        </div>
-      );
+      return null;
   }
 }
 

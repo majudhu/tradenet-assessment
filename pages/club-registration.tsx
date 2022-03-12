@@ -102,10 +102,10 @@ const registrationForm: FormData = {
         },
         {
           type: 'select',
-          name: 'sport',
-          label: 'Sport',
+          name: 'island',
+          label: 'Island/ City',
           required: true,
-          placeholder: 'Select Sport',
+          placeholder: 'Select Island/ City',
           options: [
             'Malé City',
             'Addu City',
@@ -195,7 +195,7 @@ const registrationForm: FormData = {
         },
         {
           type: 'text',
-          name: 'trainingFacilityAddress',
+          name: 'noOfCoaches',
           label: 'How many coaches do you have? ',
           htmlType: 'number',
           required: false,
@@ -204,7 +204,7 @@ const registrationForm: FormData = {
         },
         {
           type: 'textarea',
-          name: 'venueIsPublic',
+          name: 'coachQualificationLevels',
           label: 'What level qualifications do you coaches have?',
           required: false,
           placeholder:
@@ -245,7 +245,7 @@ const registrationForm: FormData = {
           required: true,
           className: 'col-span-4',
           placeholder: 'Membership price',
-          htmlType: 'text',
+          htmlType: 'number',
         },
       ],
     },
