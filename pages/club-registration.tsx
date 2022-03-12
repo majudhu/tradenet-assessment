@@ -15,9 +15,6 @@ const ClubRegistrationPage: NextPage = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Navbar />
-      <header>
-        <img src='/home-hero.jpg' className='w-full' />
-      </header>
       <main className='container py-2'>
         <h1 className='font-medium text-4xl my-10'>Club Registration Form</h1>
 

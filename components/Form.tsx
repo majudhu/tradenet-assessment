@@ -1,4 +1,4 @@
-import { ArrowCounterClockwise } from 'phosphor-react';
+import { ArrowCounterClockwise, CalendarBlank } from 'phosphor-react';
 import {
   ChangeEventHandler,
   DetailedHTMLProps,
@@ -7,6 +7,7 @@ import {
   HTMLInputTypeAttribute,
   InputHTMLAttributes,
   useCallback,
+  useRef,
   useState,
 } from 'react';
 
@@ -44,7 +45,7 @@ export const Form = ({ formData }: { formData: FormData }) => {
   return (
     <form
       onSubmit={submitForm}
-      className='grid grid-cols-4 gap-x-6 gap-y-10 pb-56'
+      className='grid grid-cols-4 gap-x-6 gap-y-10 pb-56 text-lg'
       onReset={() => setFormState(createFormState(formData))}
     >
       {formData.sections.map(({ title, fields }, i) => (
@@ -179,13 +180,13 @@ function FormFieldComponent({
   switch (field.type) {
     case 'text':
       return (
-        <div key={field.name} className={field.className}>
+        <div key={field.name} className={`relative ${field.className}`}>
           <label htmlFor={field.name} className={LABEL_CLASSNAME}>
             {field.label}
           </label>
           <input
             required={field.required}
-            className={INPUT_CLASSNAME}
+            className={`${INPUT_CLASSNAME} ${value ? '' : 'text-gray-400'}`}
             name={field.name}
             id={field.name}
             type={field.htmlType ?? 'text'}
@@ -193,6 +194,12 @@ function FormFieldComponent({
             value={value as string} // slack over typescript here
             onChange={onChange}
           />
+          {field.htmlType == 'date' && (
+            <CalendarBlank
+              className='absolute right-2.5 bottom-3.5 w-6 h-6 text-gray-400 pointer-events-none'
+              size={32}
+            />
+          )}
         </div>
       );
     case 'select':
@@ -203,7 +210,7 @@ function FormFieldComponent({
           </label>
           <select
             required={field.required}
-            className={`${INPUT_CLASSNAME} ${
+            className={`${INPUT_CLASSNAME} py-4 ${
               value == '' ? 'text-gray-400' : ''
             }`}
             name={field.name}
@@ -249,7 +256,7 @@ function FormFieldComponent({
       return (
         <div key={field.name} className={field.className}>
           <p className={LABEL_CLASSNAME}>{field.label}</p>
-          <div className='flex flex-wrap gap-10'>
+          <div className='flex flex-wrap gap-10 p-3.5'>
             {field.options.map((value: any) => (
               <div key={value} className='flex gap-4'>
                 <input
