@@ -7,7 +7,6 @@ import {
   HTMLInputTypeAttribute,
   InputHTMLAttributes,
   useCallback,
-  useRef,
   useState,
 } from 'react';
 
@@ -25,6 +24,10 @@ export const Form = ({ formData }: { formData: FormData }) => {
 
   const onChange = useCallback<ChangeEventHandler<any>>((e) => {
     switch (e.target.type) {
+      /* currently only checkbox seems to need a different onchange handler
+         boolean radios could use a special strategy have their values set as boolean,
+         but kept it as stringy 'Yes' and 'No' for now, as then radios would need to
+         have a seperate binary and multi type */
       case 'checkbox':
         return setFormState((formState) => {
           return {
@@ -169,6 +172,14 @@ export interface TextArea extends BaseFormField {
   type: 'textarea';
 }
 
+/**
+ * Generate form fields according to the type and htmlType
+ * should have refactored each component type as a seperate react component,
+ * but I will just leave it as it is for now
+ * simple text inputs use the htmlType to set their input type as in the html spec
+ * select, radio, checkboxes, etc... each have specialized component to set their
+ * styling consistent with the text input fields
+ */
 function FormFieldComponent({
   value,
   onChange,
@@ -180,7 +191,7 @@ function FormFieldComponent({
   switch (field.type) {
     case 'text':
       return (
-        <div key={field.name} className={`relative ${field.className}`}>
+        <div key={field.name} className={`relative ${field.className ?? ''}`}>
           <label htmlFor={field.name} className={LABEL_CLASSNAME}>
             {field.label}
           </label>
