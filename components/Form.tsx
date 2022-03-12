@@ -1,3 +1,5 @@
+import { ArrowCounterClockwise } from 'phosphor-react';
+import { useMemo } from 'react';
 import {
   ChangeEventHandler,
   DetailedHTMLProps,
@@ -14,7 +16,12 @@ export const Form = ({ formData }: { formData: FormData }) => {
 
   const submitForm: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
+    console.log(formData);
   };
+
+  const sectionProgress = formData.sections.map((s) =>
+    s.fields.every((f) => !f.required || formState[f.name] != '')
+  );
 
   const onChange = useCallback<ChangeEventHandler<any>>((e) => {
     switch (e.target.type) {
@@ -36,7 +43,11 @@ export const Form = ({ formData }: { formData: FormData }) => {
   }, []);
 
   return (
-    <form onSubmit={submitForm} className='grid grid-cols-4 gap-x-6 gap-y-10'>
+    <form
+      onSubmit={submitForm}
+      className='grid grid-cols-4 gap-x-6 gap-y-10 pb-56'
+      onReset={() => setFormState(createFormState(formData))}
+    >
       {formData.sections.map(({ title, fields }, i) => (
         <Fragment key={i}>
           {i !== 0 && <hr className='col-span-4 border-t-gray-600' />}
@@ -67,6 +78,28 @@ export const Form = ({ formData }: { formData: FormData }) => {
           </label>
         </div>
       )}
+      <div className='fixed inset-x-0 bottom-0 px-12 py-6 flex items-center bg-blue-800 gap-4'>
+        {sectionProgress.map((completed, i) => (
+          <div
+            key={i}
+            className={`h-5 rounded-[4px] min-w-[147px] border border-green ${
+              completed ? 'bg-green' : ''
+            }`}
+          />
+        ))}
+        <button
+          type='reset'
+          className='ml-auto p-3.5 border border-white rounded-lg'
+        >
+          <ArrowCounterClockwise className='text-white w-8 h-8' size={32} />
+        </button>
+        <button
+          type='submit'
+          className='bg-green text-white py-4 px-12 text-2xl rounded-lg'
+        >
+          Submit
+        </button>
+      </div>
     </form>
   );
 };
