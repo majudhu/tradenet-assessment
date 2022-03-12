@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 
-const Home: NextPage = () => {
+const ClubRegistrationPage: NextPage = () => {
   return (
     <>
       <Head>
@@ -27,7 +27,7 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default ClubRegistrationPage;
 
 const registrationForm: FormData = {
   endpoint: '',
