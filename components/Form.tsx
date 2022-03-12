@@ -1,5 +1,4 @@
 import { ArrowCounterClockwise } from 'phosphor-react';
-import { useMemo } from 'react';
 import {
   ChangeEventHandler,
   DetailedHTMLProps,
