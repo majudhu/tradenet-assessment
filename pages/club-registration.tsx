@@ -1,4 +1,5 @@
-import { Form, FormData } from '@/components/Form';
+import type { FormData } from '@/components/Form';
+import { Form } from '@/components/Form';
 import Navbar from '@/components/Navbar';
 import type { NextPage } from 'next';
 import Head from 'next/head';
@@ -27,7 +28,6 @@ const ClubRegistrationPage: NextPage = () => {
 export default ClubRegistrationPage;
 
 const registrationForm: FormData = {
-  endpoint: '',
   sections: [
     {
       title: 'General Information',

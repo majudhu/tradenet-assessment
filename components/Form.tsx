@@ -10,12 +10,18 @@ import {
   useState,
 } from 'react';
 
-export const Form = ({ formData }: { formData: FormData }) => {
+export const Form = ({
+  formData,
+  onSubmit,
+}: {
+  formData: FormData;
+  onSubmit: fn;
+}) => {
   const [formState, setFormState] = useState(() => createFormState(formData));
 
   const submitForm: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
-    console.log(formData);
+    onSubmit(formData);
   };
 
   const sectionProgress = formData.sections.map((s) =>
@@ -119,7 +125,6 @@ function createFormState(
 }
 
 export interface FormData {
-  endpoint: string;
   sections: FormSection[];
   decleration?: { title: string; text: string };
 }

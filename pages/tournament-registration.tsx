@@ -1,4 +1,5 @@
-import { Form, FormData } from '@/components/Form';
+import type { FormData } from '@/components/Form';
+import { Form } from '@/components/Form';
 import Navbar from '@/components/Navbar';
 import type { NextPage } from 'next';
 import Head from 'next/head';
@@ -29,7 +30,6 @@ const TournamentRegistrationPage: NextPage = () => {
 export default TournamentRegistrationPage;
 
 const tournamentForm: FormData = {
-  endpoint: '',
   sections: [
     {
       title: 'General Information',
