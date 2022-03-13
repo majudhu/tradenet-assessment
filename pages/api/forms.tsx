@@ -37,7 +37,6 @@ export default withIronSessionApiRoute(async function (
           { _id: new ObjectId(_id) },
           { $set: doc }
         );
-        console.log(x);
         return res.status(200).json({ success: true });
       } else {
         return res.status(401).json({});
@@ -45,11 +44,9 @@ export default withIronSessionApiRoute(async function (
     }
     case 'DELETE': {
       if (req.query.formId) {
-        console.log(req.query.formId);
-        const x = await collection.deleteOne({
+        await collection.deleteOne({
           _id: new ObjectId(req.query.formId as string),
         });
-        console.log(x);
         return res.status(200).json({ success: true });
       } else {
         return res.status(401).json({});
