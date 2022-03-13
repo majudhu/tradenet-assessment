@@ -197,7 +197,7 @@ const Login: NextPage = () => {
                             <Menu.Item>
                               <button
                                 className='bg-gray-100 text-red-600 rounded-b-lg flex items-center gap-4 text-lg p-2'
-                                onClick={() => deleteForm(f._id)}
+                                onClick={() => deleteForm(f._id as string)}
                               >
                                 <Trash size={24} />
                                 Delete
