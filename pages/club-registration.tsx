@@ -161,6 +161,10 @@ const registrationForm: FormData = {
           required: false,
           placeholder: 'Address of training/ competition facility ',
           className: 'col-span-2',
+          condition: {
+            field: 'hasVenue',
+            value: 'No',
+          },
         },
         {
           type: 'radio',
@@ -199,6 +203,10 @@ const registrationForm: FormData = {
           required: false,
           placeholder: 'Number of Coaches',
           className: 'col-span-2',
+          condition: {
+            field: 'coachesProvided',
+            value: 'Yes',
+          },
         },
         {
           type: 'textarea',

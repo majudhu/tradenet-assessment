@@ -90,14 +90,19 @@ export const Form = ({ formData }: { formData: FormData }) => {
           <Fragment key={i}>
             {i !== 0 && <hr className='col-span-4 border-t-gray-600' />}
             <h2 className='col-span-4 text-2xl'>{title}</h2>
-            {fields.map((field) => (
-              <FormFieldComponent
-                key={field.name}
-                value={formState[field.name]}
-                onChange={onChange}
-                {...field}
-              />
-            ))}
+            {fields.map(
+              (field) =>
+                (!field.condition ||
+                  formState[field.condition.field] ==
+                    field.condition.value) && (
+                  <FormFieldComponent
+                    key={field.name}
+                    value={formState[field.name]}
+                    onChange={onChange}
+                    {...field}
+                  />
+                )
+            )}
           </Fragment>
         ))}
         {formData.decleration && (
@@ -214,6 +219,7 @@ interface BaseFormField {
     InputHTMLAttributes<HTMLInputElement>,
     HTMLInputElement
   >;
+  condition?: { field: string; value: string };
 }
 
 export type FormField =
