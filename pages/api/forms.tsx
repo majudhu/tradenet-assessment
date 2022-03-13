@@ -33,10 +33,7 @@ export default withIronSessionApiRoute(async function (
     case 'PUT': {
       if (req.session.isLoggedIn) {
         const { _id, ...doc } = req.body;
-        const x = await collection.updateOne(
-          { _id: new ObjectId(_id) },
-          { $set: doc }
-        );
+        await collection.updateOne({ _id: new ObjectId(_id) }, { $set: doc });
         return res.status(200).json({ success: true });
       } else {
         return res.status(401).json({});
