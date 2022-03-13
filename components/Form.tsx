@@ -1,23 +1,15 @@
 import { Dialog } from '@headlessui/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import {
-  ArrowCounterClockwise,
-  CalendarBlank,
-  Check,
-  CheckCircle,
-} from 'phosphor-react';
-import {
+import { ArrowCounterClockwise, CalendarBlank, Check } from 'phosphor-react';
+import type {
   ChangeEventHandler,
   DetailedHTMLProps,
   FormEventHandler,
-  Fragment,
   HTMLInputTypeAttribute,
   InputHTMLAttributes,
-  useCallback,
-  useEffect,
-  useState,
 } from 'react';
+import { Fragment, useCallback, useEffect, useState } from 'react';
 
 export const Form = ({ formData }: { formData: FormData }) => {
   const router = useRouter();
@@ -65,20 +57,19 @@ export const Form = ({ formData }: { formData: FormData }) => {
   }, []);
 
   // if url has formid query param, load the existing form data from api
-  const formId = router.query?.formId;
   useEffect(() => {
-    if (formId) {
-      fetch(`/api/forms?formId=${formId}`)
+    if (router.query?.formId) {
+      fetch(`/api/forms?formId=${router.query?.formId}`)
         .then(async (response) => {
           const data = await response.json();
           setFormState(data);
         })
-        // clear query if api call fails
+        // clear query if api call fails, such as when an authorized user is not logged in
         .catch(() =>
           router.replace(router.pathname, undefined, { shallow: true })
         );
     }
-  }, [formId]);
+  }, [router]);
 
   return (
     <>
@@ -175,18 +166,20 @@ export const Form = ({ formData }: { formData: FormData }) => {
   );
 };
 
-function createFormState(
-  formData: FormData
-): Record<string, string | number | boolean | Date> {
+type VALUE_TYPES = string | number | boolean | Date;
+
+function createFormState(formData: FormData): Record<string, VALUE_TYPES> {
   // create blank state object to use in useState for the form template
-  return Object.assign(
-    Object.fromEntries(
-      formData.sections.flatMap(({ fields }) =>
-        fields.map(({ name }) => [name, ''])
-      )
-    ),
-    { serviceType: formData.serviceType }
+
+  const blankFormData = Object.fromEntries<VALUE_TYPES>(
+    formData.sections.flatMap((s) => s.fields.map(({ name }) => [name, '']))
   );
+
+  blankFormData.serviceType = formData.serviceType;
+  if (formData.decleration) {
+    blankFormData.decleration = false;
+  }
+  return blankFormData;
 }
 
 export interface FormData {
@@ -339,17 +332,18 @@ function FormFieldComponent({
         <div key={field.name} className={field.className}>
           <p className={LABEL_CLASSNAME}>{field.label}</p>
           <div className='flex flex-wrap gap-10 p-3.5'>
-            {field.options.map((value: any) => (
-              <div key={value} className='flex gap-4'>
+            {field.options.map((option: any) => (
+              <div key={option} className='flex gap-4'>
                 <input
                   type='radio'
                   className='w-6 h-6'
                   name={field.name}
                   id={`${field.name}-${value}`}
-                  value={value}
+                  value={option}
+                  checked={option == value}
                   onChange={onChange}
                 />
-                <label htmlFor={`${field.name}-${value}`}>{value}</label>
+                <label htmlFor={`${field.name}-${option}`}>{option}</label>
               </div>
             ))}
           </div>
