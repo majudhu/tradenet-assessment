@@ -1,4 +1,5 @@
 import { Dialog } from '@headlessui/react';
+import { el } from 'date-fns/locale';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ArrowCounterClockwise, CalendarBlank, Check } from 'phosphor-react';
@@ -18,11 +19,17 @@ export const Form = ({ formData }: { formData: FormData }) => {
 
   const submitForm: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    const response = await fetch('/api/forms', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formState),
-    });
+    const response = await (router.query.formId
+      ? fetch(`/api/forms?formId=${router.query.formId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formState),
+        })
+      : fetch('/api/forms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formState),
+        }));
     const data = await response.json();
     if (data.success) {
       setSuccess(true);
@@ -59,15 +66,17 @@ export const Form = ({ formData }: { formData: FormData }) => {
   // if url has formid query param, load the existing form data from api
   useEffect(() => {
     if (router.query?.formId) {
-      fetch(`/api/forms?formId=${router.query?.formId}`)
-        .then(async (response) => {
+      fetch(`/api/forms?formId=${router.query?.formId}`).then(
+        async (response) => {
           const data = await response.json();
-          setFormState(data);
-        })
-        // clear query if api call fails, such as when an authorized user is not logged in
-        .catch(() =>
-          router.replace(router.pathname, undefined, { shallow: true })
-        );
+          if (response.ok) {
+            setFormState(data);
+          } else {
+            // clear query if api call fails, such as when an authorized user is not logged in
+            router.replace(router.pathname, undefined, { shallow: true });
+          }
+        }
+      );
     }
   }, [router]);
 
@@ -102,6 +111,7 @@ export const Form = ({ formData }: { formData: FormData }) => {
               name='decleration'
               type='checkbox'
               className='w-6 h-6'
+              checked={formState.decleration as boolean}
               onChange={onChange}
             />
             <label htmlFor='decleration' className='ml-4'>
@@ -152,6 +162,7 @@ export const Form = ({ formData }: { formData: FormData }) => {
             onClick={() => {
               setSuccess(false);
               setFormState(createFormState(formData));
+              router.replace(router.pathname, undefined, { shallow: true });
             }}
           >
             Submit a new response
@@ -166,7 +177,7 @@ export const Form = ({ formData }: { formData: FormData }) => {
   );
 };
 
-type VALUE_TYPES = string | number | boolean | Date;
+export type VALUE_TYPES = string | number | boolean | Date;
 
 function createFormState(formData: FormData): Record<string, VALUE_TYPES> {
   // create blank state object to use in useState for the form template
