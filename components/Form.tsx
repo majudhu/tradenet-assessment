@@ -22,7 +22,7 @@ import {
 export const Form = ({ formData }: { formData: FormData }) => {
   const router = useRouter();
   const [formState, setFormState] = useState(() => createFormState(formData));
-  const [success, setSuccess] = useState(true);
+  const [success, setSuccess] = useState(false);
 
   const submitForm: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
@@ -108,6 +108,7 @@ export const Form = ({ formData }: { formData: FormData }) => {
             <input
               required
               id='decleration'
+              name='decleration'
               type='checkbox'
               className='w-6 h-6'
               onChange={onChange}
